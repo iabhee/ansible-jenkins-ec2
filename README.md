@@ -1,8 +1,27 @@
-# Ansible
+# Ansible Role
 
-## Requirements
+## Requirements:
 
+- VPC [USING SINGLE PUBLIC SUBNET]
+  - SECURITY GROUP
+  - ROUTE TABLE
+  - INTERNET GATEWAY
+  - PUBLIC SUBNET
 
-## Set Up a Jenkins Build Server in AWS ##
+- EC2 INSTANCE
+  - SECURITY GROUP
 
-https://d1.awsstatic.com/Projects/P5505030/aws-project_Jenkins-build-server.pdf
+- JENKINS INSTALLATION
+  - UPDATE ALL PACKAGES
+  - INSTALL COMPATIBE JAVA
+  - DOWNLOAD JENKINS
+  - INSTALL JENKINS 
+    - ## Set Up a Jenkins Build Server in AWS: https://d1.awsstatic.com/Projects/P5505030/aws-project_Jenkins-build-server.pdf
+
+## Prerequisites:
+
+- CREATE KEYPAIR TO ASSOCIATE IT WITH EC2 INSTANCE WHEN LAUNCHING EC2 INSTANCE
+- SSH-AGENT ADD [FOR ALLOWING SSH-KEYGEN FORWARDING] FROM LOCALHOST
+
+## How to execute:
+    ansible-playbook playbook.xml
