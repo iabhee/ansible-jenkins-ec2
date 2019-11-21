@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  connection: local
+
+  gather_facts: false
+  roles:
+     - {role: 'vpc-launch', tags: 'vpc-launch'}
+     - {role: 'jenkins-ec2', tags: 'jenkins-ec2'}
+
+- hosts: launched
+  gather_facts: false
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  roles:
+    - jenkins-install

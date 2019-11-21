@@ -1,0 +1,2 @@
+gpg_key: https://pkg.jenkins.io/redhat/jenkins.io.key
+jenkins_repo_url: https://pkg.jenkins.io/redhat/jenkins.repo

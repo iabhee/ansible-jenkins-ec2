@@ -1,0 +1,72 @@
+---
+- name: create a VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr_block }}"
+    region: "{{ aws_region }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    state: "present"
+  register: vpc
+
+- name: Set VPC ID in the variable
+  set_fact:
+     vpc_id: "{{ vpc.vpc.id }}"
+
+- name: Create internet gateway for VPC
+  ec2_vpc_igw:
+      vpc_id: "{{ vpc_id }}"
+      region: "{{ aws_region }}"
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      state: "present"
+  register: vpc_igw
+
+- name: Set internet gateway id in the variable
+  set_fact:
+      igw_id: "{{ vpc_igw.gateway_id }}"
+
+- name: Create public subnet
+  ec2_vpc_subnet:
+      state: "present"
+      vpc_id: "{{ vpc_id }}"
+      cidr: "{{ public_subnet_cidr }}"
+      az: "{{ aws_region }}a"
+      region: "{{ aws_region }}"
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      resource_tags:
+          Name: "public subnet"
+  register: public_subnet
+
+- name: Set public subnet id in the variable
+  set_fact:
+      public_subnet_id: "{{ public_subnet.subnet.id }}" 
+
+- name: Create route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ aws_region }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    tags:
+      Name: "Public"
+    subnets:
+      - "{{ public_subnet_id }}"
+    routes:
+      - dest: "0.0.0.0/0"
+        gateway_id: "{{ igw_id }}"
+
+- name:  Create Main Security Group
+  ec2_group:
+    name: "Personal Security Group"
+    description: "Personal Security Group"
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ aws_region }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    rules:
+      - proto: "tcp"
+        from_port: "22"
+        to_port: "22"
+        cidr_ip: "{{ my_ip }}/32"   
